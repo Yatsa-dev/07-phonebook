@@ -9,20 +9,6 @@ export default function ContactForm({ items }) {
   const [phone, usePhone] = useState('');
   const [addContacts] = useAddContactMutation();
 
-  const contactCheck = () => {
-    const nameInclude = items.reduce(
-      (acc, contact) => [...acc, contact.name],
-      [],
-    );
-    const phonesInclude = items.reduce(
-      (acc, contact) => [...acc, contact.phone],
-      [],
-    );
-    if (nameInclude.includes(name) || phonesInclude.includes(phone)) {
-      alert(`${name}${phone} is already in contacts`);
-    }
-  };
-
   function handleChange(event) {
     const { name, value } = event.target;
 
@@ -38,13 +24,17 @@ export default function ContactForm({ items }) {
     }
   }
   const handleSubmit = event => {
-    if (contactCheck()) {
-      return;
-    }
     event.preventDefault();
+    const repeatName = name =>
+      items.find(contact => contact.name.toLowerCase() === name.toLowerCase());
+
+    if (repeatName(name)) {
+      alert(`${name} is already in contacts`);
+    } else {
+      const newContact = { name, phone };
+      addContacts(newContact);
+    }
     reset();
-    const newContact = { name, phone };
-    addContacts(newContact);
   };
   const reset = () => {
     useName('');
